@@ -7,3 +7,16 @@
 *.iml
 out
 gen
+*.db3
+*.v2
+.suo
+*.exe
+*.dll
+*.jpg
+*.png
+*.so
+*.dylib
+*.cache
+*.CopyComplete
+*.editorconfig
+Varyl.csproj.FileListAbsolute.txt
