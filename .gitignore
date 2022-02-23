@@ -19,4 +19,5 @@ gen
 *.cache
 *.CopyComplete
 *.editorconfig
+*.pdb
 Varyl.csproj.FileListAbsolute.txt
