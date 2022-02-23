@@ -12,8 +12,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using Microsoft.Data.Sqlite;
+using Varyl.BattleSystem;
+using Varyl.BattleSystem.Enemies;
 
 namespace Varyl {
+	
 	// ReSharper disable once ClassNeverInstantiated.Global
 	[SuppressMessage("ReSharper", "UnusedMember.Global")]
 	public class Commands : BaseCommandModule {
@@ -28,8 +31,44 @@ namespace Varyl {
 		}
 
 		public static async Task Close(DbConnection connection) {
-			if (connection.State == ConnectionState.Closed) return;
+			if (connection.State == ConnectionState.Closed) {
+				return;
+			}
+			
 			await connection.CloseAsync();
+		}
+
+		[Command("walk")]
+		public async Task walk(CommandContext context, string direction) {
+			var characterId = IsUsingCharacter(context.User.Id);
+			if (characterId != null) {
+				Player user = await Player.Load((ulong) characterId);
+				user.GetPosition();
+				direction = direction.ToLowerInvariant();
+			
+				switch (direction) {
+					case "left":
+						user.Position.X -= 1;
+						break;
+					case "top":
+						user.Position.Y += 1;
+						break;
+					case "right":
+						user.Position.X += 1;
+						break;
+					case "bottom":
+						user.Position.Y -= 1;
+						break;
+					default:
+						return;
+				}
+
+				foreach (var userBuff in user.Buffs) {
+					userBuff.OnWalk(user.Position.X, user.Position.Y);
+				}
+				
+				user.UpdatePosition();
+			}
 		}
 
 		[Command("create")]
@@ -55,12 +94,20 @@ namespace Varyl {
 			await Connection.CloseAsync();
 		}
 
+		public static long? IsUsingCharacter(ulong id)
+		{
+			if (_ocCharacters.ContainsKey(id))
+				return _ocCharacters[id].Id;
+
+			return null;
+		}
+		
 		public struct UserOcData {
 			public long Id;
 		}
 
 		[SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
-		public static Dictionary<ulong, UserOcData> OcCharacter = new Dictionary<ulong, UserOcData>();
+		public static Dictionary<ulong, UserOcData> _ocCharacters = new Dictionary<ulong, UserOcData>();
 
 		[Command("stats")]
 		public async Task StatsCommand(CommandContext ctx) {
@@ -125,11 +172,11 @@ namespace Varyl {
 				await using var reader = cmd.ExecuteReader();
 				if (reader.HasRows) {
 					reader.Read();
-					if (OcCharacter.ContainsKey(ctx.User.Id)) {
-						OcCharacter.Remove(ctx.User.Id);
+					if (_ocCharacters.ContainsKey(ctx.User.Id)) {
+						_ocCharacters.Remove(ctx.User.Id);
 					}
 
-					var isSuccessful = OcCharacter.TryAdd(ctx.User.Id, new UserOcData {
+					var isSuccessful = _ocCharacters.TryAdd(ctx.User.Id, new UserOcData {
 						Id = (long) reader.GetValue(0)
 					});
 					if (isSuccessful)
@@ -164,7 +211,7 @@ namespace Varyl {
 				foreach (var item in messagesAsync) {
 					if (item.Author.Id == member.Id) {
 						await item.DeleteAsync();
-						await Task.Delay(1000);
+						await Task.Delay(1100);
 						messageCount++;
 					}
 
@@ -205,7 +252,7 @@ namespace Varyl {
 
 		[Command("nick")]
 		public async Task NickCommand(CommandContext ctx, [RemainingText] string text) {
-			var characterId = Varyl.OcCharacter.IsUsingCharacter(ctx.User.Id);
+			var characterId = IsUsingCharacter(ctx.User.Id);
 			if (characterId == null) {
 				await ctx.RespondAsync("No character selected, please first select a character using `<use`");
 				return;
@@ -244,8 +291,8 @@ namespace Varyl {
 			long id = 0;
 			var usesCharacter = false;
 
-			if (OcCharacter.ContainsKey(ctx.User.Id)) {
-				id = OcCharacter[ctx.User.Id].Id;
+			if (_ocCharacters.ContainsKey(ctx.User.Id)) {
+				id = _ocCharacters[ctx.User.Id].Id;
 				usesCharacter = true;
 			}
 
@@ -309,7 +356,7 @@ namespace Varyl {
 		[Command("addfield")]
 		[SuppressMessage("ReSharper", "StringLiteralTypo")]
 		public async Task AddFieldCommand(CommandContext ctx, string header, [RemainingText] string field) {
-			var characterId = Varyl.OcCharacter.IsUsingCharacter(ctx.User.Id);
+			var characterId = IsUsingCharacter(ctx.User.Id);
 			if (characterId != null) {
 				try {
 					await Open(Connection);
@@ -335,7 +382,7 @@ namespace Varyl {
 		[Command("removefield")]
 		[SuppressMessage("ReSharper", "StringLiteralTypo")]
 		public async Task RemoveFieldCommand(CommandContext ctx, string field) {
-			var characterId = Varyl.OcCharacter.IsUsingCharacter(ctx.User.Id);
+			var characterId = IsUsingCharacter(ctx.User.Id);
 			if (characterId != null) {
 				await Open(Connection);
 				await using (var command = Connection.CreateCommand()) {
@@ -354,7 +401,7 @@ namespace Varyl {
 		[SuppressMessage("ReSharper", "CognitiveComplexity")]
 		public async Task ProfileCmd(CommandContext context) {
 			try {
-				var characterId = Varyl.OcCharacter.IsUsingCharacter(context.User.Id);
+				var characterId = IsUsingCharacter(context.User.Id);
 
 				if (characterId != null) {
 					var embed = new DiscordEmbedBuilder();
@@ -425,7 +472,7 @@ namespace Varyl {
 		public async Task ImageCommand(CommandContext ctx) {
 			var attachments = ctx.Message.Attachments;
 
-			var characterId = Varyl.OcCharacter.IsUsingCharacter(ctx.User.Id);
+			var characterId = IsUsingCharacter(ctx.User.Id);
 			if (attachments.Count > 0 && characterId != null) {
 				var file = attachments[0].Url;
 				await Open(Connection);

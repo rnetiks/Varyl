@@ -1,7 +1,10 @@
 ﻿using System;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.Interactivity;
 using System.Linq;
 using System.Threading.Tasks;
+using DSharpPlus.Interactivity.Enums;
+using DSharpPlus.Interactivity.Extensions;
 
 namespace Varyl
 {
@@ -9,6 +12,7 @@ namespace Varyl
     {
         static void Main(string[] args)
         {
+            
             if (!System.IO.File.Exists("database.db3"))
             {
                 var p = new Microsoft.Data.Sqlite.SqliteConnection("Data Source=database.db3");
@@ -33,6 +37,10 @@ namespace Varyl
                 Token = "ODc5NDY5MDYwOTM1NTM2Njcx.YSQLYw.TbCh5-rDLWf60yFLaJ0cbwyY4NQ",
                 TokenType = DSharpPlus.TokenType.Bot,
                 MinimumLogLevel = Microsoft.Extensions.Logging.LogLevel.Information
+            });
+            discord.UseInteractivity(new InteractivityConfiguration() {
+                PollBehaviour = PollBehaviour.KeepEmojis,
+                Timeout = TimeSpan.FromSeconds(30)
             });
             var commands = discord.UseCommandsNext(new CommandsNextConfiguration
             {
