@@ -5,10 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-using DSharpPlus.Interactivity.Enums;
-using DSharpPlus.Interactivity.Extensions;
-using Varyl.BattleSystem.Enemies;
 using static Varyl.RandomExtension;
 
 namespace Varyl.BattleSystem {

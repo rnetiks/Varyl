@@ -1,5 +1,4 @@
 ﻿using System;
-using DSharpPlus.CommandsNext;
 
 namespace Varyl {
 	public static class Level {

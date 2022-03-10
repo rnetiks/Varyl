@@ -5,6 +5,7 @@ namespace Varyl.BattleSystem {
 		Task<int> Attack(Player player);
 		Task Defend();
 		Task UseSkill();
+		Task Update();
 		Task<int> damageEntity(int damage);
 
 		string Name { get; }

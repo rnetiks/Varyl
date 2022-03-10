@@ -6,14 +6,17 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
+using DSharpPlus;
+using DSharpPlus.Interactivity.Extensions;
 using Microsoft.Data.Sqlite;
 using Varyl.BattleSystem;
-using Varyl.BattleSystem.Enemies;
 
 namespace Varyl {
 	
@@ -38,35 +41,64 @@ namespace Varyl {
 			await connection.CloseAsync();
 		}
 
+		[Command("image")]
+		public async Task setImage(CommandContext cmd, string uri = "") {
+			string s = string.Empty;
+			var characterId = IsUsingCharacter(cmd.User.Id);
+			if (characterId == null) return;
+			var c = cmd.Message.Attachments;
+			if (c.Count > 0) {
+				using (var enumerator = c.GetEnumerator()) {
+					enumerator.MoveNext();
+					if (enumerator.Current != null) 
+						s = enumerator.Current.Url;
+				}
+			}
+			else {
+				
+				if (string.IsNullOrEmpty(uri)) {
+					await cmd.RespondAsync("Neither a file, nor a uri was found.");
+					return;
+				}
+
+				s = uri;
+			}
+			Player player = await Player.Load((long) characterId);
+			player.ProfileUri = s;
+			player.Update();
+		}
+		
 		[Command("walk")]
 		public async Task walk(CommandContext context, string direction) {
 			var characterId = IsUsingCharacter(context.User.Id);
 			if (characterId != null) {
-				Player user = await Player.Load((ulong) characterId);
-				user.GetPosition();
+				Player user = await Player.Load((long) characterId);
+				user.CachePosition();
 				direction = direction.ToLowerInvariant();
 			
 				switch (direction) {
 					case "left":
 						user.Position.X -= 1;
 						break;
-					case "top":
+					case "up":
 						user.Position.Y += 1;
 						break;
 					case "right":
 						user.Position.X += 1;
 						break;
-					case "bottom":
+					case "down":
 						user.Position.Y -= 1;
 						break;
 					default:
 						return;
 				}
 
-				foreach (var userBuff in user.Buffs) {
-					userBuff.OnWalk(user.Position.X, user.Position.Y);
+				await context.RespondAsync("You have walked 10 meter");
+				if (user.Buffs.Length > 0) {
+					foreach (var buff in user.Buffs) {
+						buff.OnWalk(ref user, user.Position.X, user.Position.Y);
+					}
 				}
-				
 				user.UpdatePosition();
 			}
 		}
@@ -81,14 +113,23 @@ namespace Varyl {
 
 			await Open(Connection);
 			await using (var command = Connection.CreateCommand()) {
-				command.CommandText =
-					"INSERT INTO `characters` (`character_name`, `by_user`, `nick`) SELECT @name, @user, @name WHERE NOT EXISTS(SELECT * FROM `characters` WHERE `character_name`= @name AND `by_user` = @user);"; // New Way
+				command.CommandText = "INSERT INTO `characters` (nick, Creator, profile_uri) SELECT @name, @user, @n WHERE NOT EXISTS(SELECT * FROM Characters WHERE nick = @name AND Creator = @user);"; // New Way
+				//command.CommandText = "INSERT INTO Characters (nick, Creator) SELECT @name, @user FROM dual WHERE NOT EXISTS (SELECT * FROM Characters WHERE nick = @name AND Creator = @user) LIMIT 1;";
 				command.Parameters.AddWithValue("@name", name);
 				command.Parameters.AddWithValue("@user", context.User.Id);
-				var reader = command.ExecuteReader();
-				await context.RespondAsync(reader.RecordsAffected > 0
-					? $"Created Character {name}"
-					: "Character already exists.");
+				command.Parameters.AddWithValue("@n", string.Empty);
+				try { 				
+					var reader = command.ExecuteReader();
+					await context.RespondAsync(reader.RecordsAffected > 0
+						? $"Created Character {name}"
+						: "Character already exists.");
+					
+				}
+				catch (Exception e) {
+					Console.WriteLine(e);
+					throw;
+				}
+
 			}
 
 			await Connection.CloseAsync();
@@ -97,46 +138,66 @@ namespace Varyl {
 		public static long? IsUsingCharacter(ulong id)
 		{
 			if (_ocCharacters.ContainsKey(id))
-				return _ocCharacters[id].Id;
+				return _ocCharacters[id];
+
 
 			return null;
 		}
 		
-		public struct UserOcData {
-			public long Id;
-		}
 
 		[SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
-		public static Dictionary<ulong, UserOcData> _ocCharacters = new Dictionary<ulong, UserOcData>();
+		private static Dictionary<ulong, long> _ocCharacters = new Dictionary<ulong, long>();
 
-		[Command("stats")]
-		public async Task StatsCommand(CommandContext ctx) {
-			try {
-				Connection.Open();
-				await using (var command = Connection.CreateCommand()) {
-					command.CommandText = ("SELECT COUNT(nick), SUM(messages) FROM characters WHERE by_user = @id");
-					command.Parameters.AddWithValue("@id", ctx.User.Id);
-					await using var reader = command.ExecuteReader();
-					reader.Read();
-					await ctx.RespondAsync(
-						$"Total Characters: {reader.GetInt32(0)}\nTotal Messages: {reader.GetInt32(1)}");
-				}
-
-				await Close(Connection);
-			}
-			catch (Exception e) {
-				Console.WriteLine(e.Message);
-				throw;
-			}
+		[Command("status")]
+		public async Task GetOcStatus(CommandContext context) {
+			if (context.User.Id != 168407391317000192) return;
+			var characterId = IsUsingCharacter(context.User.Id);
+			if (characterId == null) return;
+			Player player = await Player.Load((long) characterId);
+			await context.Channel.SendMessageAsync($"{player.Name}\n\nHealth: {player.BaseHealth / player.Health * 100}%\nMana: {player.BaseMagic / player.Magic * 100}%\nA: {player.GetSocialOpinion()}");
 		}
 
+		// ReSharper disable once CognitiveComplexity
+		public Task<Bitmap> CreateMap(Point point) {
+			World world = new World();
+			world.InitializeBiome();
+			using Bitmap bitmap = new Bitmap(256, 256);
+			for (var xIndex = -128; xIndex < 128; xIndex++) {
+				for (var yIndex = -128; yIndex < 128; yIndex++) {
+					var xn = xIndex / 2f - 0.5f - point.X / 2f;
+					var yn = yIndex / 2f - 0.5f - point.Y / 2f;
+					var noiseValue = world.GetNoise(xn, yn);
+					noiseValue += 0.5f * world.GetNoise(xn * 2f, yn * 2f);
+					noiseValue += 0.25f * world.GetNoise(xn * 4f, yn * 4f);
+					noiseValue /= 1 + 0.5f + 0.25f;
+					noiseValue += 0.4f;
+					noiseValue = Math.Max(noiseValue, 0f);
+					noiseValue = Math.Min(1f, noiseValue);
+					if(noiseValue < .1f)
+						bitmap.SetPixel(xIndex, yIndex, Color.Aqua);
+					else if(noiseValue < 0.15f)
+						bitmap.SetPixel(xIndex, yIndex, Color.SandyBrown);
+					else if(noiseValue < 0.3)
+						bitmap.SetPixel(xIndex, yIndex, Color.ForestGreen);
+					else if(noiseValue < 0.5)
+						bitmap.SetPixel(xIndex, yIndex, Color.LimeGreen);
+					else if(noiseValue < 0.7)
+						bitmap.SetPixel(xIndex, yIndex, Color.YellowGreen);
+					else if(noiseValue < 0.9)
+						bitmap.SetPixel(xIndex, yIndex, Color.Yellow);
+					else bitmap.SetPixel(xIndex, yIndex, Color.GhostWhite);
+
+				}
+			}
+			return Task.FromResult(bitmap);
+		}
 		[Command("list")]
 		public async Task ListCommand(CommandContext ctx, DiscordUser discordUser = null, string search = "") {
 			var user = discordUser != null ? discordUser.Id : ctx.User.Id;
 			// List add characters by user
 			Connection.Open();
 			await using (var command = Connection.CreateCommand()) {
-				command.CommandText = "SELECT character_name FROM characters WHERE by_user = @user";
+				command.CommandText = "SELECT nick FROM Characters WHERE Creator = @user";
 				if (search != string.Empty) {
 					command.CommandText += " AND character_name LIKE @search";
 					command.Parameters.AddWithValue("@search", search);
@@ -166,7 +227,7 @@ namespace Varyl {
 			DiscordMessage message;
 			Connection.Open();
 			await using (var cmd = Connection.CreateCommand()) {
-				cmd.CommandText = "SELECT id from characters WHERE character_name = @name AND by_user = @user";
+				cmd.CommandText = "SELECT id from characters WHERE nick = @name AND Creator = @user";
 				cmd.Parameters.AddWithValue("@name", name);
 				cmd.Parameters.AddWithValue("@user", ctx.User.Id);
 				await using var reader = cmd.ExecuteReader();
@@ -176,9 +237,7 @@ namespace Varyl {
 						_ocCharacters.Remove(ctx.User.Id);
 					}
 
-					var isSuccessful = _ocCharacters.TryAdd(ctx.User.Id, new UserOcData {
-						Id = (long) reader.GetValue(0)
-					});
+					var isSuccessful = _ocCharacters.TryAdd(ctx.User.Id, (long) reader.GetValue(0));
 					if (isSuccessful)
 						message = await ctx.Channel.SendMessageAsync($"Using {name}");
 					else
@@ -190,7 +249,7 @@ namespace Varyl {
 
 			await ctx.Message.DeleteAsync();
 
-			Timer(2000, async () => { await message.DeleteAsync(); });
+			VarylExtensions.Extensions.Timer(2000, async () => { await message.DeleteAsync(); });
 		}
 
 		[Command("purge"), Description("Deletes a certain amount of messages from the last 100 messages.")]
@@ -199,7 +258,7 @@ namespace Varyl {
 			DiscordMember member,
 			[Description("The maximum amount of message to delete. DEFAULT 5")]
 			int max = 5) {
-			if (context.Member.Permissions != DSharpPlus.Permissions.Administrator &&
+			if (context.Member.Permissions != Permissions.Administrator &&
 			    context.User.Id != 168407391317000192) {
 				await context.Channel.SendMessageAsync("[Exception] Permission.User");
 				return;
@@ -223,83 +282,24 @@ namespace Varyl {
 			}
 		}
 
-		[Command("createWebhook")]
+		[Command("webhook")]
 		[SuppressMessage("ReSharper", "StringLiteralTypo")]
 		public async Task SetupCommand(CommandContext ctx) {
 			try {
+				if (ctx.Member.Permissions != Permissions.Administrator && ctx.User.Id != 168407391317000192) 
+					return;
 				await ctx.Channel.CreateWebhookAsync("Varyl");
-				var message = await ctx.RespondAsync("Webhook Varyl created");
-				Timer(2500, async () => { await message.DeleteAsync(); });
 			}
 			catch (Exception e) {
 				Console.WriteLine(e.Message);
 			}
 		}
 
-		private static void Timer(int milliseconds, Action action) {
-			var timer = new Timer(milliseconds) {
-				AutoReset = false
-			};
-			timer.Elapsed += delegate
-			{
-				action.Invoke();
-				timer.Stop();
-				timer.Dispose();
-			};
-			timer.Start();
-		}
-
-
-		[Command("nick")]
-		public async Task NickCommand(CommandContext ctx, [RemainingText] string text) {
-			var characterId = IsUsingCharacter(ctx.User.Id);
-			if (characterId == null) {
-				await ctx.RespondAsync("No character selected, please first select a character using `<use`");
-				return;
-			}
-
-			if (text.Length > 32) {
-				await ctx.RespondAsync("Name must be less or equal to 32 characters in length");
-				return;
-			}
-
-			if (text.Length < 1) {
-				await ctx.RespondAsync("Name must but bigger or equal to 1 character in length");
-				return;
-			}
-
-			await Connection.OpenAsync();
-			await using (var command = Connection.CreateCommand()) {
-				command.CommandText = "UPDATE `characters` SET `nick` = @name WHERE characters.id = @id";
-				command.Parameters.AddWithValue("@name", text);
-				command.Parameters.AddWithValue("@id", characterId);
-
-				await using var result = command.ExecuteReader();
-				if (result.RecordsAffected > 0) {
-					await ctx.RespondAsync("Name successfully updated");
-				}
-				else await ctx.RespondAsync("Name update failed");
-			}
-
-
-			await Connection.CloseAsync();
-		}
-
 		[Command("say")]
 		[SuppressMessage("ReSharper", "CognitiveComplexity")]
-		public async Task SayCommand(CommandContext ctx, [RemainingText] string text) {
-			long id = 0;
-			var usesCharacter = false;
-
-			if (_ocCharacters.ContainsKey(ctx.User.Id)) {
-				id = _ocCharacters[ctx.User.Id].Id;
-				usesCharacter = true;
-			}
-
-			if (!usesCharacter) {
-				await ctx.RespondAsync("No character selected");
-				return;
-			}
+		public async Task SayCommand(CommandContext ctx, [RemainingText] string messageContent) {
+			var characterId = IsUsingCharacter(ctx.User.Id);
+			if (characterId == null) return;
 
 			await Task.Delay(500);
 			await ctx.Message.DeleteAsync();
@@ -319,81 +319,21 @@ namespace Varyl {
 					await hook.ModifyAsync("Varyl", default, ctx.Channel.Id);
 
 				try {
-					Connection.Open();
+					Player player = await Player.Load((long) characterId);
+					var builder = new DiscordWebhookBuilder {
+						Username = player.Name,
+						Content = messageContent
+					};
 
-					await using var cmd = Connection.CreateCommand();
-					cmd.CommandText =
-						"SELECT characters.nick, profile_picture.uri FROM characters LEFT JOIN profile_picture ON characters.id = profile_picture.id WHERE characters.id = @id; UPDATE characters SET messages = messages + 1 WHERE characters.id = @id2";
-					cmd.Parameters.AddWithValue("@id", id);
-					cmd.Parameters.AddWithValue("@id2", id);
-
-
-					await using var result = cmd.ExecuteReader();
-					if (result.HasRows) {
-						result.Read();
-						var name = result.GetString(0);
-
-						var builder = new DiscordWebhookBuilder {
-							Username = name,
-							Content = text
-						};
-
-						if (!result.IsDBNull(1)) {
-							builder.AvatarUrl = result.GetString(1);
-						}
-
-						await hook.ExecuteAsync(builder);
-
-						await Connection.CloseAsync();
+					if (string.IsNullOrEmpty(player.ProfileUri)) {
+						builder.AvatarUrl = player.ProfileUri;
 					}
+
+					await hook.ExecuteAsync(builder);
 				}
 				catch (Exception e) {
 					Console.WriteLine(e.Message);
 				}
-			}
-		}
-
-		[Command("addfield")]
-		[SuppressMessage("ReSharper", "StringLiteralTypo")]
-		public async Task AddFieldCommand(CommandContext ctx, string header, [RemainingText] string field) {
-			var characterId = IsUsingCharacter(ctx.User.Id);
-			if (characterId != null) {
-				try {
-					await Open(Connection);
-					await using (var command = Connection.CreateCommand()) {
-						command.CommandText =
-							"INSERT INTO character_fields (character_id, field_type, field_content, header) VALUES (@character, 1, @content, @header)";
-						command.Parameters.AddWithValue("@character", characterId);
-						command.Parameters.AddWithValue("@content", field);
-						command.Parameters.AddWithValue("@header", header);
-						command.ExecuteNonQuery();
-					}
-
-					await ctx.RespondAsync("Field added");
-					await Close(Connection);
-				}
-				catch (Exception e) {
-					Console.WriteLine(e.Message);
-					throw;
-				}
-			}
-		}
-
-		[Command("removefield")]
-		[SuppressMessage("ReSharper", "StringLiteralTypo")]
-		public async Task RemoveFieldCommand(CommandContext ctx, string field) {
-			var characterId = IsUsingCharacter(ctx.User.Id);
-			if (characterId != null) {
-				await Open(Connection);
-				await using (var command = Connection.CreateCommand()) {
-					command.CommandText = "DELETE FROM character_fields WHERE character_id = @id AND header = @header;";
-					command.Parameters.AddWithValue("@id", characterId);
-					command.Parameters.AddWithValue("@header", field);
-					command.ExecuteNonQuery();
-				}
-
-				await ctx.RespondAsync("Field deleted");
-				await Close(Connection);
 			}
 		}
 
@@ -405,85 +345,19 @@ namespace Varyl {
 
 				if (characterId != null) {
 					var embed = new DiscordEmbedBuilder();
-					await Open(Connection);
-					var command = Connection.CreateCommand();
-					command.CommandText =
-						"SELECT characters.character_name, characters.nick, characters.messages, profile_picture.uri FROM characters LEFT JOIN profile_picture ON characters.id = profile_picture.id WHERE characters.id = @id;";
-					command.Parameters.AddWithValue("@id", characterId);
-					await using var result = command.ExecuteReader();
-					
-					if (result.HasRows) {
-						result.Read();
-						var name = result.GetString(0);
-						var nick = result.GetString(1);
-						var messages = result.GetInt32(2);
-						embed.WithTitle("Profile");
-						embed.AddField("Name", name);
-						if (name != nick) {
-							embed.AddField("Nickname", nick);
-						}
-
-						embed.AddField("Ranking", $"Lv.{Level.LevelBuilder(messages)}");
-						if (!result.IsDBNull(3)) {
-							embed.WithThumbnail(result.GetString(3));
-						}
-
-						var messageBuilder = new DiscordMessageBuilder();
-						messageBuilder.WithEmbed(embed);
-						command = Connection.CreateCommand();
-						command.CommandText = "SELECT * FROM character_fields WHERE character_id = @id";
-						command.Parameters.AddWithValue("@id", characterId);
-
-
-						await using (var reader = command.ExecuteReader()) {
-							if (reader.HasRows) {
-								var memoryStream = new MemoryStream();
-								while (reader.Read()) {
-									var type = reader.GetInt32(1);
-									if (type != 1) continue;
-									var content = reader.GetString(2);
-									var contentBytes =
-										Encoding.UTF8.GetBytes(reader.GetString(3) + "\n" + content + "\n\n\n");
-									memoryStream.Write(contentBytes, 0, contentBytes.Length);
-								}
-
-								if (memoryStream.Length > 0) {
-									memoryStream.Position = 0;
-
-									messageBuilder.WithFile("fields.txt", memoryStream);
-								}
-							}
-						}
-
-						await context.RespondAsync(messageBuilder);
-					}
-
-					await Close(Connection);
+					Player player = await Player.Load((long) characterId);
+					embed.WithTitle("Profile");
+					embed.AddField("Name", player.Name);
+					if(!string.IsNullOrEmpty(player.ProfileUri))
+						embed.WithThumbnail(player.ProfileUri);
+					var messageBuilder = new DiscordMessageBuilder();
+					messageBuilder.WithEmbed(embed);
+					await context.RespondAsync(messageBuilder);
 				}
 			}
 			catch (Exception e) {
 				Console.WriteLine(e.Message);
 				throw;
-			}
-		}
-
-		[Command("Image"),
-		 Description("Apply an image to the profile picture of a character, must include a uploaded image.")]
-		public async Task ImageCommand(CommandContext ctx) {
-			var attachments = ctx.Message.Attachments;
-
-			var characterId = IsUsingCharacter(ctx.User.Id);
-			if (attachments.Count > 0 && characterId != null) {
-				var file = attachments[0].Url;
-				await Open(Connection);
-				var cmd = Connection.CreateCommand();
-				cmd.CommandText =
-					"CREATE TABLE IF NOT EXISTS profile_picture (id INTEGER, uri TEXT); DELETE FROM profile_picture WHERE id = @id; INSERT INTO profile_picture (id, uri) VALUES (@id, @uri)";
-				cmd.Parameters.AddWithValue("@id", characterId);
-				cmd.Parameters.AddWithValue("@uri", file);
-				await cmd.ExecuteNonQueryAsync();
-				await ctx.RespondAsync("Uploaded image");
-				await Close(Connection);
 			}
 		}
 	}

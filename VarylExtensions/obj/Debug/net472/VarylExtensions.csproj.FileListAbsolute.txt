@@ -1,0 +1,9 @@
+C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\bin\Debug\net472\VarylExtensions.dll
+C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\bin\Debug\net472\VarylExtensions.pdb
+C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\obj\Debug\net472\VarylExtensions.csproj.AssemblyReference.cache
+C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\obj\Debug\net472\VarylExtensions.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\obj\Debug\net472\VarylExtensions.AssemblyInfoInputs.cache
+C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\obj\Debug\net472\VarylExtensions.AssemblyInfo.cs
+C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\obj\Debug\net472\VarylExtensions.csproj.CoreCompileInputs.cache
+C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\obj\Debug\net472\VarylExtensions.dll
+C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\obj\Debug\net472\VarylExtensions.pdb

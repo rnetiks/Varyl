@@ -1,0 +1,9 @@
+C:\Users\Shirayuki\Source\Repos\Varyl\FastNoise\obj\Debug\net472\FastNoise.csproj.AssemblyReference.cache
+C:\Users\Shirayuki\Source\Repos\Varyl\FastNoise\obj\Debug\net472\FastNoise.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Shirayuki\Source\Repos\Varyl\FastNoise\obj\Debug\net472\FastNoise.AssemblyInfoInputs.cache
+C:\Users\Shirayuki\Source\Repos\Varyl\FastNoise\obj\Debug\net472\FastNoise.AssemblyInfo.cs
+C:\Users\Shirayuki\Source\Repos\Varyl\FastNoise\obj\Debug\net472\FastNoise.csproj.CoreCompileInputs.cache
+C:\Users\Shirayuki\Source\Repos\Varyl\FastNoise\bin\Debug\net472\FastNoise.dll
+C:\Users\Shirayuki\Source\Repos\Varyl\FastNoise\bin\Debug\net472\FastNoise.pdb
+C:\Users\Shirayuki\Source\Repos\Varyl\FastNoise\obj\Debug\net472\FastNoise.dll
+C:\Users\Shirayuki\Source\Repos\Varyl\FastNoise\obj\Debug\net472\FastNoise.pdb

@@ -47,26 +47,34 @@ namespace Varyl.BattleSystem {
 		/// <summary>
 		/// The buffs of the character.
 		/// </summary>
-		public Buff[] Buffs;
+		public Buff[] Buffs = {
+			new StrengthBuff(), null
+		};
 		
 		/// <summary>
 		/// The world position of the character;
 		/// </summary>
-		public Point Position;
+		public Point<long> Position;
 
+		/// <summary>
+		/// Link to the profile image of the character
+		/// </summary>
+		public string ProfileUri;
+		
 		/// <summary>
 		/// Creates a <see cref="Player"/> object from actual user data
 		/// </summary>
 		/// <param name="character"></param>
 		/// <returns></returns>
-		public static async Task<Player> Load(ulong character) {
+		public static async Task<Player> Load(long character) {
 			await Open(Connection);
 			Player player;
 			await using (var command = Connection.CreateCommand()) {
-				command.CommandText = "SELECT id, baseHealth, baseMagic, baseDefense, baseStrength, baseAgility, health, magic, defense, strength, agility, level, xp, nick FROM characters WHERE id = @id";
+				command.CommandText = "SELECT id, baseHealth, baseMagic, baseDefense, baseStrength, baseAgility, health, magic, defense, strength, agility, level, xp, nick, profile_uri FROM Characters WHERE id = @id";
 				command.Parameters.AddWithValue("@id", character);
 				await using var reader = command.ExecuteReader();
 				reader.Read();
+
 				player = new Player {
 					_id = reader.GetInt64(0),
 					BaseHealth = reader.GetInt64(1),
@@ -81,7 +89,8 @@ namespace Varyl.BattleSystem {
 					Agility = reader.GetInt64(10),
 					Level = reader.GetInt64(11),
 					Experience = reader.GetInt64(12),
-					Name = reader.GetString(13)
+					Name = reader.GetString(13),
+					ProfileUri = reader.GetString(14)
 				};
 			}
 			
@@ -89,11 +98,14 @@ namespace Varyl.BattleSystem {
 			return await Task.FromResult(player);
 		}
 
+		/// <summary>
+		/// Updates the general information of the player
+		/// </summary>
 		public async void Update() {
 			await Open(Connection);
 			await using (var command = Connection.CreateCommand()) {
 				command.CommandText =
-					"UPDATE characters SET baseHealth = @baseHealth, baseMagic = @baseMagic, baseDefense = @baseDefense, baseStrength = @baseStrength, baseAgility = @baseAgility, health = @health, magic = @magic, defense = @defense, strength = @strength, agility = @agility, level = @level, xp = @xp WHERE id = @id";
+					"UPDATE Characters SET baseHealth = @baseHealth, baseMagic = @baseMagic, baseDefense = @baseDefense, baseStrength = @baseStrength, baseAgility = @baseAgility, health = @health, magic = @magic, defense = @defense, strength = @strength, agility = @agility, level = @level, xp = @xp, profile_uri = @profileuri WHERE id = @id";
 				command.Parameters.AddWithValue("@baseHealth", BaseHealth);
 				command.Parameters.AddWithValue("@baseMagic", BaseMagic);
 				command.Parameters.AddWithValue("@baseDefense", BaseDefense);
@@ -106,6 +118,7 @@ namespace Varyl.BattleSystem {
 				command.Parameters.AddWithValue("@agility", Agility);
 				command.Parameters.AddWithValue("@level", Level);
 				command.Parameters.AddWithValue("@xp", Experience);
+				command.Parameters.AddWithValue("@profileuri", ProfileUri);
 				command.Parameters.AddWithValue("@id", _id);
 				command.ExecuteNonQuery();
 			}
@@ -116,14 +129,14 @@ namespace Varyl.BattleSystem {
 		/// <summary>
 		/// Fills in the Position on the <see cref="Player"/> object.
 		/// </summary>
-		public async void GetPosition() {
+		public async void CachePosition() {
 			await Open(Connection);
 			await using (var command = Connection.CreateCommand()) {
-				command.CommandText = "SELECT PositionX, PositionY FROM characters WHERE id = @id";
+				command.CommandText = "SELECT PositionX, PositionY FROM Characters WHERE id = @id";
 				command.Parameters.AddWithValue("@id", _id);
 				await using var reader = command.ExecuteReader();
 				reader.Read();
-				Position = new Point(reader.GetInt64(0), reader.GetInt64(1));
+				Position = new Point<long>(reader.GetInt64(0), reader.GetInt64(1));
 			}
 			await Close(Connection);
 		}
@@ -133,7 +146,7 @@ namespace Varyl.BattleSystem {
 		public async void UpdatePosition() {
 			await Open(Connection);
 			await using (var command = Connection.CreateCommand()) {
-				command.CommandText = "UPDATE characters SET PositionX = @xpos, PositionY = @ypos WHERE id = @id";
+				command.CommandText = "UPDATE Characters SET PositionX = @xpos, PositionY = @ypos WHERE id = @id";
 				command.Parameters.AddWithValue("@xpos", Position.X);
 				command.Parameters.AddWithValue("@ypos", Position.Y);
 				command.Parameters.AddWithValue("@id", _id);
@@ -154,6 +167,7 @@ namespace Varyl.BattleSystem {
 				await using var reader = command.ExecuteReader();
 				while (reader.Read()) {
 					// TODO fill the Buff implementation out
+					// Maybe json?
 				}
 			}
 
@@ -167,12 +181,12 @@ namespace Varyl.BattleSystem {
 			await Open(Connection);
 			List<InventorySlot> slots;
 			await using (var command = Connection.CreateCommand()) {
-				command.CommandText = "SELECT item, quantity, type FROM inventory WHERE parent = @id LIMIT 124";
+				command.CommandText = "SELECT Item, Quantity, Type FROM Inventory WHERE Parent = @id LIMIT 124";
 				command.Parameters.AddWithValue("@id", _id);
 				await using var reader = command.ExecuteReader();
 				slots = new List<InventorySlot>();
 				while (reader.Read()) {
-					InventorySlot slot = new InventorySlot {
+					var slot = new InventorySlot {
 						Item = reader.GetInt32(0), 
 						Quantity = reader.GetInt32(1), 
 						Type = (ItemType) reader.GetInt32(2)
@@ -217,12 +231,67 @@ namespace Varyl.BattleSystem {
 			return await enemy.damageEntity((int) ((Strength - enemy.Defense / 2) * RandomExtension.NextFloat(0.7f, 1.13f)));
 		}
 
+		/// <summary>
+		/// Damages the player object
+		/// </summary>
+		/// <param name="damage"></param>
+		/// <returns></returns>
 		public Task<int> DamageEntity(int damage) {
 			Health = Math.Max(0, Health - damage);
 			return Task.FromResult(damage);
 		}
 		
+		/// <summary>
+		/// Checks if a team of players is defeated
+		/// </summary>
+		/// <param name="players"></param>
+		/// <returns></returns>
 		public static bool AllDefeated(Player[] players) => players.All(player => player.Health <= 0);
+
+		// ReSharper disable once CyclomaticComplexity
+		private static async Task<string> ConvertPointsToString(int points) {
+			var t = points switch {
+				_ when points > -500 && points < 1000 => "Neutral",
+				_ when points < -500 => "Bad",
+				_ when points < -1000 => "Criminal",
+				_ when points < -2000 => "Wanted",
+				_ when points < -4000 => "Monster",
+				_ when points < -5000 => "Kill on sight",
+				_ when points < -10000 => "International Enemy",
+				_ when points >= 768000 => "n̷o̸ ̸i̵n̷f̶o̵r̴m̷a̴t̷i̵o̸n̸",
+				_ when points > 384000 => "Fox's protection",
+				_ when points > 192000 => "Undefined",
+				_ when points > 96000 => "Fox Inc.",
+				_ when points > 48000 => "Special grade hero",
+				_ when points > 24000 => "Controller",
+				_ when points > 12000 => "Special individual",
+				_ when points > 6000 => "Hero",
+				_ when points > 3000 => "Friendly",
+				_ when points >= 1000 => "Good",
+				_ => "Neutral"
+			};
+			return await Task.FromResult(t);
+		}
+		
+		/// <summary>
+		/// Gets the rank of what others think
+		/// </summary>
+		/// <returns></returns>
+		public async Task<string> GetSocialOpinion() {
+			await Open(Connection);
+			int points;
+			await using (var command = Connection.CreateCommand()) {
+				command.CommandText = "SELECT soPoints FROM characters WHERE id = @id";
+				command.Parameters.AddWithValue("@id", _id);
+				await using var reader = command.ExecuteReader();
+				reader.Read();
+				points = reader.GetInt32(0);
+			}
+
+			await Close(Connection);
+
+			return await ConvertPointsToString(points);
+		}
 	}
 
 	[SuppressMessage("ReSharper", "NotAccessedField.Global")]
@@ -235,7 +304,7 @@ namespace Varyl.BattleSystem {
 	[Flags]
 	[SuppressMessage("ReSharper", "UnusedMember.Global")]
 	public enum ItemType {
-		Consumable = 1,
+		Consumable = 1, //Might be lewd
 		Head = 2,
 		Chest = 4,
 		Leg = 8,

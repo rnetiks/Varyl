@@ -6,9 +6,9 @@ namespace Varyl {
 			return Math.Sqrt(x * x + y * y);
 		}
 
-		public static Point Position(double angle, float distance) {
+		public static Point<long> Position(double angle, float distance) {
 			angle *= Math.PI / 180;
-			return new Point((int) (distance * Math.Cos(angle)), (int) (distance * Math.Sin(angle)));
+			return new Point<long>((int) (distance * Math.Cos(angle)), (int) (distance * Math.Sin(angle)));
 		}
 	}
 }

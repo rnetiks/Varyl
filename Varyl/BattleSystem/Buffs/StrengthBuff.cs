@@ -1,7 +1,11 @@
-﻿namespace Varyl.BattleSystem.Buffs {
+﻿using System;
+
+namespace Varyl.BattleSystem.Buffs {
 	public class StrengthBuff : Buff {
-		public override void OnWalk(long x, long y) {
-			base.OnWalk(x, y);
+		public StrengthBuff(float strength) {
+			Strength = strength;
 		}
+
+		private float Strength { get; }
 	}
 }
