@@ -3,107 +3,74 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
+using System.Drawing.Drawing2D;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using System.Timers;
 using DSharpPlus;
 using DSharpPlus.Interactivity.Extensions;
-using Microsoft.Data.Sqlite;
+using MMDTools;
+using Newtonsoft.Json;
+using SQLitePCL;
 using Varyl.BattleSystem;
+using Varyl.Containers;
+using VarylExtensions;
+using static Varyl.BaseCommands;
+using static VarylExtensions.Extensions;
+using BindingFlags = System.Reflection.BindingFlags;
+using Color = System.Drawing.Color;
 
 namespace Varyl {
-	
+
+	[Group("inventory"), Aliases("inv")]
+	public class InventoryCommands : BaseCommandModule {
+		[Command("use")]
+		public async Task UseItemAsync(CommandContext ctx, string ItemToUse) {
+			var character = IsUsingCharacter(ctx.User.Id);
+			if (character != null) {
+				Player player = await Player.Load((long) character);
+				player.FillInventory();
+				var gameItem = player.Inventory.First(item => item.Type == ItemType.Consumable && item.Name.StartsWith(ItemToUse));
+				if (gameItem != null) gameItem.Action();
+			}
+		}
+	}
+
 	// ReSharper disable once ClassNeverInstantiated.Global
 	[SuppressMessage("ReSharper", "UnusedMember.Global")]
-	public class Commands : BaseCommandModule {
-		public static readonly SqliteConnection Connection = new SqliteConnection("Data Source=database.db3");
-
-		public static async Task Open(DbConnection connection) {
-			if (connection.State == ConnectionState.Open) {
-				return;
-			}
-
-			await connection.OpenAsync();
-		}
-
-		public static async Task Close(DbConnection connection) {
-			if (connection.State == ConnectionState.Closed) {
-				return;
-			}
-			
-			await connection.CloseAsync();
-		}
-
-		[Command("image")]
-		public async Task setImage(CommandContext cmd, string uri = "") {
-			string s = string.Empty;
-			var characterId = IsUsingCharacter(cmd.User.Id);
-			if (characterId == null) return;
-			var c = cmd.Message.Attachments;
-			if (c.Count > 0) {
-				using (var enumerator = c.GetEnumerator()) {
-					enumerator.MoveNext();
-					if (enumerator.Current != null) 
-						s = enumerator.Current.Url;
-				}
-			}
-			else {
-				
-				if (string.IsNullOrEmpty(uri)) {
-					await cmd.RespondAsync("Neither a file, nor a uri was found.");
-					return;
-				}
-
-				s = uri;
-			}
-			Player player = await Player.Load((long) characterId);
-			player.ProfileUri = s;
-			player.Update();
+	[Group("owner"), Aliases("o"), RequireOwner]
+	public class OwnerCommands : BaseCommandModule {
+		[Command("shutdown")]
+		public async Task ShutdownAsync(CommandContext ctx) {
+			await ctx.RespondAsync("Shutting down.");
+			Environment.Exit(938812094);
 		}
 		
-		[Command("walk")]
-		public async Task walk(CommandContext context, string direction) {
-			var characterId = IsUsingCharacter(context.User.Id);
-			if (characterId != null) {
-				Player user = await Player.Load((long) characterId);
-				user.CachePosition();
-				direction = direction.ToLowerInvariant();
-			
-				switch (direction) {
-					case "left":
-						user.Position.X -= 1;
-						break;
-					case "up":
-						user.Position.Y += 1;
-						break;
-					case "right":
-						user.Position.X += 1;
-						break;
-					case "down":
-						user.Position.Y -= 1;
-						break;
-					default:
-						return;
-				}
-
-				await context.RespondAsync("You have walked 10 meter");
-				if (user.Buffs.Length > 0) {
-					foreach (var buff in user.Buffs) {
-						buff.OnWalk(ref user, user.Position.X, user.Position.Y);
-					}
-				}
-				user.UpdatePosition();
-			}
+		[Command("kick_bot")]
+		public async Task KickBotAsync(CommandContext ctx) {
+			await ctx.Guild.LeaveAsync();
 		}
+		
+		[Command("get_hooks")]
+		public async Task GetHooksAsync(CommandContext ctx) {
+			var hooks = await ctx.Guild.GetWebhooksAsync();
+			var s = string.Empty;
+			for (var index = 0; index < hooks.Count; index++) {
+				s += $"{index + 1}: {hooks[index].Name}\n";
+			}
 
-		[Command("create")]
+			await ctx.Channel.SendMessageAsync(s.Length > 0 ? s : "None");
+		}
+	}
+	
+	[Group("create"), Aliases("c")]
+	public class CreateCommands : BaseCommandModule {
+		
+		[Command("character")]
 		[SuppressMessage("ReSharper", "UnusedMember.Global")]
 		public async Task CreateCommand(CommandContext context, [RemainingText] string name) {
 			if (name.Length < 2 || name.Length > 32) {
@@ -132,7 +99,79 @@ namespace Varyl {
 
 			}
 
-			await Connection.CloseAsync();
+			Close(Connection);
+		}
+		
+		[Command("webhook")]
+		[SuppressMessage("ReSharper", "StringLiteralTypo")]
+		public async Task SetupCommand(CommandContext ctx) {
+			try {
+				if (ctx.Member.Permissions != Permissions.Administrator && ctx.User.Id != 168407391317000192) 
+					return;
+				await ctx.Channel.CreateWebhookAsync("Varyl");
+			}
+			catch (Exception e) {
+				Console.WriteLine(e.Message);
+			}
+		}
+		
+	}
+	
+	public class BaseCommands : BaseCommandModule {
+		const string ArrowRight = "→";
+		[Command("image")]
+		public async Task setImage(CommandContext cmd, string uri = "") {
+			string s = string.Empty;
+			var characterId = IsUsingCharacter(cmd.User.Id);
+			if (characterId == null) return;
+			var c = cmd.Message.Attachments;
+			if (c.Count > 0) {
+				foreach (var attachment in c) {
+					s = attachment.Url;
+				}
+			}
+			else {
+				
+				if (string.IsNullOrEmpty(uri)) {
+					await cmd.RespondAsync("Neither a file, nor a uri was found.");
+					return;
+				}
+
+				s = uri;
+			}
+			Player player = await Player.Load((long) characterId);
+			player.ProfileUri = s;
+			player.Update();
+		}
+		
+		[Command("walk")]
+		public async Task walk(CommandContext context, string direction) {
+			var characterId = IsUsingCharacter(context.User.Id);
+			if (characterId != null) {
+				Player user = await Player.Load((long) characterId);
+				user.LoadPosition();
+				direction = direction.ToLowerInvariant();
+				switch (direction) {
+					case "left":
+						user.Position.X -= 1;
+						break;
+					case "up":
+						user.Position.Y += 1;
+						break;
+					case "right":
+						user.Position.X += 1;
+						break;
+					case "down":
+						user.Position.Y -= 1;
+						break;
+					default:
+						return;
+				}
+				
+
+				await context.RespondAsync("You have walked 10 meter");
+				user.SavePosition();
+			}
 		}
 
 		public static long? IsUsingCharacter(ulong id)
@@ -191,17 +230,14 @@ namespace Varyl {
 			}
 			return Task.FromResult(bitmap);
 		}
+
 		[Command("list")]
-		public async Task ListCommand(CommandContext ctx, DiscordUser discordUser = null, string search = "") {
+		public async Task ListCharactersAsync(CommandContext ctx, DiscordUser discordUser = null, string search = "") {
 			var user = discordUser != null ? discordUser.Id : ctx.User.Id;
 			// List add characters by user
-			Connection.Open();
+			await Open(Connection);
 			await using (var command = Connection.CreateCommand()) {
-				command.CommandText = "SELECT nick FROM Characters WHERE Creator = @user";
-				if (search != string.Empty) {
-					command.CommandText += " AND character_name LIKE @search";
-					command.Parameters.AddWithValue("@search", search);
-				}
+				command.CommandText = "SELECT nick, IsDead FROM Characters WHERE Creator = @user";
 
 				command.Parameters.AddWithValue("@user", user);
 				await using var reader = command.ExecuteReader();
@@ -211,28 +247,39 @@ namespace Varyl {
 				else {
 					var characters = string.Empty;
 					while (reader.Read()) {
-						characters += $"{reader.GetString(0)}\n";
+						
+						characters += $"- {reader.GetString(0)}";
+						var isDead = reader.GetInt64(1);
+						Console.WriteLine(isDead);
+						if (isDead == 1) 
+							characters += " [Dead]";
+						characters += "\n";
 					}
 
 					await ctx.RespondAsync(characters);
 				}
 			}
-
-			Connection.Close();
+			Close(Connection);
 		}
 
 		[Command("use")]
-		public async Task UseCommand(CommandContext ctx, [RemainingText] string name) {
+		public async Task UseCharacterAsync(CommandContext ctx, [RemainingText] string name) {
 			if (name.Length < 2) return;
 			DiscordMessage message;
-			Connection.Open();
+			await Open(Connection);
 			await using (var cmd = Connection.CreateCommand()) {
-				cmd.CommandText = "SELECT id from characters WHERE nick = @name AND Creator = @user";
+				cmd.CommandText = "SELECT id, IsDead, DeadUntil from characters WHERE nick = @name AND Creator = @user";
 				cmd.Parameters.AddWithValue("@name", name);
 				cmd.Parameters.AddWithValue("@user", ctx.User.Id);
 				await using var reader = cmd.ExecuteReader();
 				if (reader.HasRows) {
 					reader.Read();
+					if (reader.GetInt64(1) == 1) {
+						await ctx.Channel.SendMessageAsync(
+							$"{name} is dead, you can revive them in {TimeSpan.FromTicks(reader.GetInt64(2) - DateTime.Now.Ticks).TotalHours:F1} hours");
+						return;
+					}
+
 					if (_ocCharacters.ContainsKey(ctx.User.Id)) {
 						_ocCharacters.Remove(ctx.User.Id);
 					}
@@ -249,7 +296,7 @@ namespace Varyl {
 
 			await ctx.Message.DeleteAsync();
 
-			VarylExtensions.Extensions.Timer(2000, async () => { await message.DeleteAsync(); });
+			Timer(5000, async () => { await message.DeleteAsync(); });
 		}
 
 		[Command("purge"), Description("Deletes a certain amount of messages from the last 100 messages.")]
@@ -282,18 +329,7 @@ namespace Varyl {
 			}
 		}
 
-		[Command("webhook")]
-		[SuppressMessage("ReSharper", "StringLiteralTypo")]
-		public async Task SetupCommand(CommandContext ctx) {
-			try {
-				if (ctx.Member.Permissions != Permissions.Administrator && ctx.User.Id != 168407391317000192) 
-					return;
-				await ctx.Channel.CreateWebhookAsync("Varyl");
-			}
-			catch (Exception e) {
-				Console.WriteLine(e.Message);
-			}
-		}
+
 
 		[Command("say")]
 		[SuppressMessage("ReSharper", "CognitiveComplexity")]
@@ -306,14 +342,13 @@ namespace Varyl {
 			var hooksAsync = await ctx.Guild.GetWebhooksAsync();
 			if (hooksAsync.Count > 0) {
 				DiscordWebhook hook = null;
-				using (var hooks = hooksAsync.GetEnumerator()) {
-					while (hooks.MoveNext()) {
-						if (hooks.Current != null && hooks.Current.Name == "Varyl") {
-							hook = hooks.Current;
-						}
-					}
+				var enumerator = hooksAsync.GetEnumerator();
+				while (enumerator.MoveNext()) {
+					if (enumerator.Current != null && enumerator.Current.Name != "Varyl") continue;
+					hook = enumerator.Current;
+					break;
 				}
-
+				enumerator.Dispose();
 				if (hook == null) return;
 				if (hook.ChannelId != ctx.Channel.Id)
 					await hook.ModifyAsync("Varyl", default, ctx.Channel.Id);
@@ -325,7 +360,7 @@ namespace Varyl {
 						Content = messageContent
 					};
 
-					if (string.IsNullOrEmpty(player.ProfileUri)) {
+					if (!string.IsNullOrEmpty(player.ProfileUri)) {
 						builder.AvatarUrl = player.ProfileUri;
 					}
 
@@ -359,6 +394,7 @@ namespace Varyl {
 				Console.WriteLine(e.Message);
 				throw;
 			}
+			
 		}
 	}
 }

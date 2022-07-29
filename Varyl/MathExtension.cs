@@ -1,4 +1,6 @@
 ﻿using System;
+using FoxMath;
+using FoxMath.Point;
 
 namespace Varyl {
 	public static class MathExtension {

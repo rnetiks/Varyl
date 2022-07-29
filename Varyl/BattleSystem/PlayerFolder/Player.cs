@@ -4,7 +4,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Varyl.BattleSystem.Buffs;
-using static Varyl.Commands;
+using Varyl.Containers;
+using FoxMath.Point;
+using static VarylExtensions.Extensions;
 
 // ReSharper disable once CheckNamespace
 namespace Varyl.BattleSystem {
@@ -42,14 +44,12 @@ namespace Varyl.BattleSystem {
 		/// <summary>
 		/// The inventory of the character.
 		/// </summary>
-		public InventorySlot[] Inventory = new InventorySlot[124];
+		public GameItem[] Inventory = new GameItem[124];
 		
 		/// <summary>
 		/// The buffs of the character.
 		/// </summary>
-		public Buff[] Buffs = {
-			new StrengthBuff(), null
-		};
+		public Buff[] Buffs;
 		
 		/// <summary>
 		/// The world position of the character;
@@ -60,6 +60,52 @@ namespace Varyl.BattleSystem {
 		/// Link to the profile image of the character
 		/// </summary>
 		public string ProfileUri;
+		
+		public string replacePvPString(string formula, Player player_one, Player player_two) {
+			string __replacot(Player p, string formula) {
+				formula = formula.Replace("player2.name", p.Name);
+				formula = formula.Replace("player2.level", p.Level.ToString());
+				formula = formula.Replace("player2.exp", p.Experience.ToString());
+			
+				formula = formula.Replace("player2.bcon", p.BaseHealth.ToString());
+				formula = formula.Replace("player2.bmag", p.BaseMagic.ToString());
+				formula = formula.Replace("player2.bdef", p.BaseDefense.ToString());
+				formula = formula.Replace("player2.bstr", p.BaseStrength.ToString());
+				formula = formula.Replace("player2.bagi", p.BaseAgility.ToString());
+			
+				formula = formula.Replace("player2.con", p.Health.ToString());
+				formula = formula.Replace("player2.mag", p.Magic.ToString());
+				formula = formula.Replace("player2.def", p.Defense.ToString());
+				formula = formula.Replace("player2.str", p.Strength.ToString());
+				formula = formula.Replace("player2.agi", p.Agility.ToString());
+
+				return formula;
+			}
+			formula = __replacot(player_one, formula);
+			formula = __replacot(player_two, formula);
+			
+			return formula;
+		}
+		public string LevelMessage(short health, short magic, short defense, short strength, short agility) {
+			var message = "";
+			message += health > 0
+				? $"Health: {BaseHealth.ToString()} → {(BaseHealth + health).ToString()}"
+				: $"Health: {BaseHealth.ToString()}";
+			message += magic > 0
+				? $"Magic: {BaseMagic.ToString()} → {(BaseMagic + magic).ToString()}"
+				: $"Magic: {BaseMagic.ToString()}";
+			message += defense > 0
+				? $"Defense: {BaseDefense.ToString()} → {(BaseDefense + defense).ToString()}"
+				: $"Defense: {BaseDefense.ToString()}";
+			message += strength > 0
+				? $"Strength: {BaseStrength.ToString()} → {(BaseStrength + strength).ToString()}"
+				: $"Strength: {BaseStrength.ToString()}";
+			message += agility > 0
+				? $"Agility: {BaseAgility.ToString()} → {(BaseAgility + agility).ToString()}"
+				: $"Agility: {BaseAgility.ToString()}";
+
+			return message;
+		}
 		
 		/// <summary>
 		/// Creates a <see cref="Player"/> object from actual user data
@@ -74,7 +120,6 @@ namespace Varyl.BattleSystem {
 				command.Parameters.AddWithValue("@id", character);
 				await using var reader = command.ExecuteReader();
 				reader.Read();
-
 				player = new Player {
 					_id = reader.GetInt64(0),
 					BaseHealth = reader.GetInt64(1),
@@ -94,10 +139,12 @@ namespace Varyl.BattleSystem {
 				};
 			}
 			
-			await Close(Connection);
+			Close(Connection);
 			return await Task.FromResult(player);
 		}
-
+		
+		private Player() {}
+		
 		/// <summary>
 		/// Updates the general information of the player
 		/// </summary>
@@ -123,13 +170,13 @@ namespace Varyl.BattleSystem {
 				command.ExecuteNonQuery();
 			}
 
-			await Close(Connection);
+			Close(Connection);
 		}
 		
 		/// <summary>
 		/// Fills in the Position on the <see cref="Player"/> object.
 		/// </summary>
-		public async void CachePosition() {
+		public async void LoadPosition() {
 			await Open(Connection);
 			await using (var command = Connection.CreateCommand()) {
 				command.CommandText = "SELECT PositionX, PositionY FROM Characters WHERE id = @id";
@@ -138,12 +185,12 @@ namespace Varyl.BattleSystem {
 				reader.Read();
 				Position = new Point<long>(reader.GetInt64(0), reader.GetInt64(1));
 			}
-			await Close(Connection);
+			Close(Connection);
 		}
 		/// <summary>
 		/// Updates the position of the character within the database.
 		/// </summary>
-		public async void UpdatePosition() {
+		public async void SavePosition() {
 			await Open(Connection);
 			await using (var command = Connection.CreateCommand()) {
 				command.CommandText = "UPDATE Characters SET PositionX = @xpos, PositionY = @ypos WHERE id = @id";
@@ -153,7 +200,7 @@ namespace Varyl.BattleSystem {
 				command.ExecuteNonQuery();
 			}
 
-			await Close(Connection);
+			Close(Connection);
 		}
 		
 		/// <summary>
@@ -171,7 +218,7 @@ namespace Varyl.BattleSystem {
 				}
 			}
 
-			await Close(Connection);
+			Close(Connection);
 		}
 		
 		/// <summary>
@@ -179,24 +226,20 @@ namespace Varyl.BattleSystem {
 		/// </summary>
 		public async void FillInventory() {
 			await Open(Connection);
-			List<InventorySlot> slots;
+			List<GameItem> slots;
 			await using (var command = Connection.CreateCommand()) {
 				command.CommandText = "SELECT Item, Quantity, Type FROM Inventory WHERE Parent = @id LIMIT 124";
 				command.Parameters.AddWithValue("@id", _id);
 				await using var reader = command.ExecuteReader();
-				slots = new List<InventorySlot>();
+				slots = new List<GameItem>(); 
 				while (reader.Read()) {
-					var slot = new InventorySlot {
-						Item = reader.GetInt32(0), 
-						Quantity = reader.GetInt32(1), 
-						Type = (ItemType) reader.GetInt32(2)
-					};
-					slots.Add(slot);
+					var slot = ItemFactory.CreateGameItem(reader.GetInt32(0));
+					if (slot != null) slots.Add(slot);
 				}
 			}
 
 			Inventory = slots.ToArray();
-			await Close(Connection);
+			Close(Connection);
 		}
 		
 		/// <summary>
@@ -218,8 +261,6 @@ namespace Varyl.BattleSystem {
 			Level = level;
 			Name = name;
 		}
-
-		private Player() { }
 
 
 		/// <summary>
@@ -288,19 +329,12 @@ namespace Varyl.BattleSystem {
 				points = reader.GetInt32(0);
 			}
 
-			await Close(Connection);
+			Close(Connection);
 
 			return await ConvertPointsToString(points);
 		}
 	}
 
-	[SuppressMessage("ReSharper", "NotAccessedField.Global")]
-	public class InventorySlot {
-		public int Item;
-		public int Quantity;
-		public ItemType Type;
-	}
-	
 	[Flags]
 	[SuppressMessage("ReSharper", "UnusedMember.Global")]
 	public enum ItemType {

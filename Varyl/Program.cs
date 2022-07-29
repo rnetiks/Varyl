@@ -2,8 +2,10 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
 using System.Threading.Tasks;
+using DSharpPlus.Entities;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
+using Varyl.Containers;
 
 namespace Varyl
 {
@@ -16,7 +18,7 @@ namespace Varyl
         static async Task BotAsync() {
             discord = new DSharpPlus.DiscordClient(new DSharpPlus.DiscordConfiguration
             {
-                Token = "ODc5NDY5MDYwOTM1NTM2Njcx.YSQLYw.TbCh5-rDLWf60yFLaJ0cbwyY4NQ",
+                Token = Credentials.Create("cred.dpg"),
                 TokenType = DSharpPlus.TokenType.Bot,
                 MinimumLogLevel = Microsoft.Extensions.Logging.LogLevel.Information
             });
@@ -28,37 +30,47 @@ namespace Varyl
             {
                 StringPrefixes = new[] { "<" },
             });
-            commands.RegisterCommands<Commands>();
+            commands.RegisterCommands<BaseCommands>();
+            commands.RegisterCommands<Trade>();
+            commands.RegisterCommands<OwnerCommands>();
+            commands.RegisterCommands<InventoryCommands>();
+            commands.RegisterCommands<CreateCommands>();
             await discord.ConnectAsync();
-            
-            //await Task.Delay(-1);
+
             ulong discordChannel = 0;
             ulong discordGuild = 0; 
-            for (;;) {
-                string cmd = Console.ReadLine();
-                if (cmd != null && cmd.StartsWith(";guild")) {
-                    discordGuild = ulong.Parse(cmd.Split()[1]);
-                    var _guild = await discord.GetGuildAsync(discordGuild);
-                    if (_guild != null) Console.Title = _guild.Name;
-                }
+            while (true) { 
+                var cmd = Console.ReadLine();
+                DiscordGuild guild;
+                DiscordChannel channel;
 
-                if (cmd != null && cmd.StartsWith(";channel") && discordGuild != 0) {
-                    discordChannel = ulong.Parse(cmd.Split()[1]);
-                    var _guild = await discord.GetGuildAsync(discordGuild);
-                    var _channel = _guild.GetChannel(discordChannel);
-                    if (_channel != null) Console.Title = $"{Console.Title} - {_channel.Name}";
+                if (cmd == null || !cmd.StartsWith(';')) continue;
+                switch (cmd.Substring(1)) {
+                    case "quit":
+                        return;
+                    case "guild":
+                        discordGuild = ulong.Parse(cmd.Split()[1]);
+                        guild = await discord.GetGuildAsync(discordGuild);
+                        if (guild != null)
+                            Console.Title = guild.Name;
+                        break;
+                    case "channel" when discordGuild != 0:
+                        discordChannel = ulong.Parse(cmd.Split()[1]);
+                        guild = await discord.GetGuildAsync(discordGuild);
+                        channel = guild.GetChannel(discordChannel);
+                        if (channel != null)
+                            Console.Title = $"{Console.Title} - {channel.Name}";
+                        break;
+                    case "say" when discordGuild != 0 && discordChannel != 0:
+                        guild = await discord.GetGuildAsync(discordGuild);
+                        channel = guild.GetChannel(discordChannel);
+                        var message = cmd.Substring(4);
+                        await channel.SendMessageAsync(message);
+                        break;
+                    default:
+                        Console.WriteLine("Invalid command.");
+                        break;
                 }
-
-                if (cmd != null && cmd.Trim().ToLowerInvariant() == ";quit") {
-                    return;
-                }
-                
-                if (cmd == null || !cmd.StartsWith(";say")) continue;
-                if (discordChannel == 0 || discordGuild == 0) continue;
-                var guild = await discord.GetGuildAsync(discordGuild);
-                var channel = guild.GetChannel(discordChannel);
-                var message = cmd.Substring(4);
-                await channel.SendMessageAsync(message);
             }
         }
     }

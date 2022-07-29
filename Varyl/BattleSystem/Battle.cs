@@ -14,7 +14,7 @@ namespace Varyl.BattleSystem {
 		Player[] playerTeam;
 		private bool _matchRunning = true;
 		private const int MAX_ROUNDS = 30;
-
+		
 		public Battle(Player[] players, IEnemy[] enemies) {
 			playerTeam = players;
 			enemyTeam = enemies;
@@ -25,7 +25,7 @@ namespace Varyl.BattleSystem {
 				_matchRunning = await NextRound(context);
 			}
 
-			await using MemoryStream ms = new MemoryStream();
+			await using var ms = new MemoryStream();
 			var content = Encoding.ASCII.GetBytes(MessageLog);
 			ms.Write(content, 0, content.Length);
 			ms.Position = 0;

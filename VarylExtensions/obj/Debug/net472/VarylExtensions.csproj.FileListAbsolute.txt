@@ -7,3 +7,15 @@ C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\obj\Debug\net472\VarylExte
 C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\obj\Debug\net472\VarylExtensions.csproj.CoreCompileInputs.cache
 C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\obj\Debug\net472\VarylExtensions.dll
 C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\obj\Debug\net472\VarylExtensions.pdb
+C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\bin\Debug\net472\runtimes\win-x86\native\e_sqlite3.dll
+C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\bin\Debug\net472\runtimes\win-x64\native\e_sqlite3.dll
+C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\bin\Debug\net472\runtimes\win-arm\native\e_sqlite3.dll
+C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\bin\Debug\net472\Microsoft.Data.Sqlite.dll
+C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\bin\Debug\net472\SQLitePCLRaw.batteries_v2.dll
+C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\bin\Debug\net472\SQLitePCLRaw.core.dll
+C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\bin\Debug\net472\SQLitePCLRaw.provider.e_sqlite3.dll
+C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\bin\Debug\net472\System.Buffers.dll
+C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\bin\Debug\net472\System.Memory.dll
+C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\bin\Debug\net472\System.Numerics.Vectors.dll
+C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\bin\Debug\net472\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\Shirayuki\Source\Repos\Varyl\VarylExtensions\obj\Debug\net472\VarylExtensions.csproj.CopyComplete

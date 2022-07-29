@@ -6,10 +6,6 @@
     "projectPath": "C:\\Users\\Shirayuki\\Source\\Repos\\Varyl\\FastNoise\\FastNoise.csproj",
     "outputPath": "C:\\Users\\Shirayuki\\Source\\Repos\\Varyl\\FastNoise\\obj\\",
     "projectStyle": "PackageReference",
-    "fallbackFolders": [
-      "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-      "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet"
-    ],
     "originalTargetFrameworks": [
       "net472"
     ],

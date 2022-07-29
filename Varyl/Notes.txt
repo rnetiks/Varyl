@@ -1,0 +1,15 @@
+﻿To implement
+
+- Marriage Buff
+If character is within 100 tiles of their spouse, activate the marriage buff which increases all stats by 10%
+
+- Overmarriage debuff
+If character is married to more than 5 people, decrease Constitution and Dexterity by 20% (Y'know, they all have "needs")
+
+- Marriage
+- Crafting System
+- PVP
+- Quests
+- Market
+- S E X
+Creates a toddler who is always getting on your nerves. Oh and also gives debuff to all stats by 10%
