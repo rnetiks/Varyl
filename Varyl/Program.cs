@@ -1,11 +1,11 @@
 ﻿using System;
+using System.IO;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
-using Varyl.Containers;
 
 namespace Varyl
 {
@@ -18,7 +18,7 @@ namespace Varyl
         static async Task BotAsync() {
             discord = new DSharpPlus.DiscordClient(new DSharpPlus.DiscordConfiguration
             {
-                Token = Credentials.Create("cred.dpg"),
+                Token = File.ReadAllText("cred.dpg"),
                 TokenType = DSharpPlus.TokenType.Bot,
                 MinimumLogLevel = Microsoft.Extensions.Logging.LogLevel.Information
             });
@@ -31,9 +31,7 @@ namespace Varyl
                 StringPrefixes = new[] { "<" },
             });
             commands.RegisterCommands<BaseCommands>();
-            commands.RegisterCommands<Trade>();
             commands.RegisterCommands<OwnerCommands>();
-            commands.RegisterCommands<InventoryCommands>();
             commands.RegisterCommands<CreateCommands>();
             await discord.ConnectAsync();
 

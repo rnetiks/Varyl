@@ -1,13 +1,29 @@
 {
   "version": 2,
-  "dgSpecHash": "1MMHrteaY21GdpK4oMxNdRHdOQ1JOfBH10e7xv5EvGzzcQ8LbltZ3DXR66ZhjCQeZsgIjBQcpgTyYmGcHhUlqw==",
-  "success": false,
+  "dgSpecHash": "SZ0dd9TJ+z7sHjg1TOYvTXOvz0xxZK1YGQ885sre1F75p5K8E0AgWyc0nWUiyNUae//nH2VqL3BWfeZSKZYYzg==",
+  "success": true,
   "projectFilePath": "C:\\Users\\Shirayuki\\Source\\Repos\\Varyl\\Varyl\\Varyl.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Shirayuki\\.nuget\\packages\\avx2perlinnoise\\1.0.0\\avx2perlinnoise.1.0.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\concurrenthashset\\1.1.0\\concurrenthashset.1.1.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\dsharpplus\\4.2.0\\dsharpplus.4.2.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\dsharpplus.commandsnext\\4.2.0\\dsharpplus.commandsnext.4.2.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\dsharpplus.interactivity\\4.2.0\\dsharpplus.interactivity.4.2.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\dsharpplus.voicenext\\4.2.0\\dsharpplus.voicenext.4.2.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\dsharpplus.voicenext.natives\\1.0.0\\dsharpplus.voicenext.natives.1.0.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\emzi0767.common\\2.6.2\\emzi0767.common.2.6.2.nupkg.sha512",
     "C:\\Users\\Shirayuki\\.nuget\\packages\\htmlagilitypack\\1.11.43\\htmlagilitypack.1.11.43.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\litjson\\0.18.0\\litjson.0.18.0.nupkg.sha512",
     "C:\\Users\\Shirayuki\\.nuget\\packages\\microsoft.data.sqlite\\6.0.4\\microsoft.data.sqlite.6.0.4.nupkg.sha512",
     "C:\\Users\\Shirayuki\\.nuget\\packages\\microsoft.data.sqlite.core\\6.0.4\\microsoft.data.sqlite.core.6.0.4.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\5.0.1\\microsoft.extensions.dependencyinjection.5.0.1.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\5.0.0\\microsoft.extensions.dependencyinjection.abstractions.5.0.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\5.0.0\\microsoft.extensions.logging.abstractions.5.0.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.1\\microsoft.netcore.platforms.1.1.1.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\microsoft.netcore.targets\\1.1.0\\microsoft.netcore.targets.1.1.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\microsoft.win32.primitives\\4.3.0\\microsoft.win32.primitives.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\microsoft.win32.systemevents\\6.0.0\\microsoft.win32.systemevents.6.0.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512",
     "C:\\Users\\Shirayuki\\.nuget\\packages\\opentk\\4.7.4\\opentk.4.7.4.nupkg.sha512",
     "C:\\Users\\Shirayuki\\.nuget\\packages\\opentk.compute\\4.7.4\\opentk.compute.4.7.4.nupkg.sha512",
     "C:\\Users\\Shirayuki\\.nuget\\packages\\opentk.core\\4.7.4\\opentk.core.4.7.4.nupkg.sha512",
@@ -15,183 +31,84 @@
     "C:\\Users\\Shirayuki\\.nuget\\packages\\opentk.input\\4.7.4\\opentk.input.4.7.4.nupkg.sha512",
     "C:\\Users\\Shirayuki\\.nuget\\packages\\opentk.mathematics\\4.7.4\\opentk.mathematics.4.7.4.nupkg.sha512",
     "C:\\Users\\Shirayuki\\.nuget\\packages\\opentk.openal\\4.7.4\\opentk.openal.4.7.4.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\opentk.redist.glfw\\3.3.7.27\\opentk.redist.glfw.3.3.7.27.nupkg.sha512",
     "C:\\Users\\Shirayuki\\.nuget\\packages\\opentk.windowing.common\\4.7.4\\opentk.windowing.common.4.7.4.nupkg.sha512",
     "C:\\Users\\Shirayuki\\.nuget\\packages\\opentk.windowing.desktop\\4.7.4\\opentk.windowing.desktop.4.7.4.nupkg.sha512",
     "C:\\Users\\Shirayuki\\.nuget\\packages\\opentk.windowing.graphicslibraryframework\\4.7.4\\opentk.windowing.graphicslibraryframework.4.7.4.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\runtime.debian.8-x64.runtime.native.system.security.cryptography.openssl\\4.3.2\\runtime.debian.8-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\runtime.fedora.23-x64.runtime.native.system.security.cryptography.openssl\\4.3.2\\runtime.fedora.23-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\runtime.fedora.24-x64.runtime.native.system.security.cryptography.openssl\\4.3.2\\runtime.fedora.24-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\runtime.native.system\\4.3.0\\runtime.native.system.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\runtime.native.system.net.http\\4.3.0\\runtime.native.system.net.http.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\runtime.native.system.net.security\\4.3.0\\runtime.native.system.net.security.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\runtime.native.system.security.cryptography.apple\\4.3.0\\runtime.native.system.security.cryptography.apple.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\runtime.native.system.security.cryptography.openssl\\4.3.2\\runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\runtime.opensuse.13.2-x64.runtime.native.system.security.cryptography.openssl\\4.3.2\\runtime.opensuse.13.2-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\runtime.opensuse.42.1-x64.runtime.native.system.security.cryptography.openssl\\4.3.2\\runtime.opensuse.42.1-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\runtime.osx.10.10-x64.runtime.native.system.security.cryptography.apple\\4.3.0\\runtime.osx.10.10-x64.runtime.native.system.security.cryptography.apple.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\runtime.osx.10.10-x64.runtime.native.system.security.cryptography.openssl\\4.3.2\\runtime.osx.10.10-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\runtime.rhel.7-x64.runtime.native.system.security.cryptography.openssl\\4.3.2\\runtime.rhel.7-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\runtime.ubuntu.14.04-x64.runtime.native.system.security.cryptography.openssl\\4.3.2\\runtime.ubuntu.14.04-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\runtime.ubuntu.16.04-x64.runtime.native.system.security.cryptography.openssl\\4.3.2\\runtime.ubuntu.16.04-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl\\4.3.2\\runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512",
     "C:\\Users\\Shirayuki\\.nuget\\packages\\sharpziplib\\1.3.3\\sharpziplib.1.3.3.nupkg.sha512",
     "C:\\Users\\Shirayuki\\.nuget\\packages\\sixlabors.imagesharp\\1.0.4\\sixlabors.imagesharp.1.0.4.nupkg.sha512",
     "C:\\Users\\Shirayuki\\.nuget\\packages\\sqlitepclraw.bundle_e_sqlite3\\2.0.6\\sqlitepclraw.bundle_e_sqlite3.2.0.6.nupkg.sha512",
     "C:\\Users\\Shirayuki\\.nuget\\packages\\sqlitepclraw.core\\2.0.6\\sqlitepclraw.core.2.0.6.nupkg.sha512",
     "C:\\Users\\Shirayuki\\.nuget\\packages\\sqlitepclraw.lib.e_sqlite3\\2.0.6\\sqlitepclraw.lib.e_sqlite3.2.0.6.nupkg.sha512",
     "C:\\Users\\Shirayuki\\.nuget\\packages\\sqlitepclraw.provider.e_sqlite3\\2.0.6\\sqlitepclraw.provider.e_sqlite3.2.0.6.nupkg.sha512",
-    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.buffers\\4.5.1\\system.buffers.4.5.1.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.collections\\4.3.0\\system.collections.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.collections.concurrent\\4.3.0\\system.collections.concurrent.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.collections.immutable\\5.0.0\\system.collections.immutable.5.0.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.diagnostics.debug\\4.3.0\\system.diagnostics.debug.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.diagnostics.diagnosticsource\\4.3.0\\system.diagnostics.diagnosticsource.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.diagnostics.tracing\\4.3.0\\system.diagnostics.tracing.4.3.0.nupkg.sha512",
     "C:\\Users\\Shirayuki\\.nuget\\packages\\system.drawing.common\\6.0.0\\system.drawing.common.6.0.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.globalization\\4.3.0\\system.globalization.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.globalization.calendars\\4.3.0\\system.globalization.calendars.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.globalization.extensions\\4.3.0\\system.globalization.extensions.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.io\\4.3.0\\system.io.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.io.filesystem\\4.3.0\\system.io.filesystem.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.io.filesystem.primitives\\4.3.0\\system.io.filesystem.primitives.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.linq\\4.3.0\\system.linq.4.3.0.nupkg.sha512",
     "C:\\Users\\Shirayuki\\.nuget\\packages\\system.memory\\4.5.4\\system.memory.4.5.4.nupkg.sha512",
-    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512",
-    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\4.5.3\\system.runtime.compilerservices.unsafe.4.5.3.nupkg.sha512"
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.net.http\\4.3.4\\system.net.http.4.3.4.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.net.nameresolution\\4.3.0\\system.net.nameresolution.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.net.primitives\\4.3.0\\system.net.primitives.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.net.security\\4.3.0\\system.net.security.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.net.sockets\\4.3.0\\system.net.sockets.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.net.webheadercollection\\4.3.0\\system.net.webheadercollection.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.net.websockets\\4.3.0\\system.net.websockets.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.net.websockets.client\\4.3.2\\system.net.websockets.client.4.3.2.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.reflection\\4.3.0\\system.reflection.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.reflection.extensions\\4.3.0\\system.reflection.extensions.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.reflection.primitives\\4.3.0\\system.reflection.primitives.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.resources.resourcemanager\\4.3.0\\system.resources.resourcemanager.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.runtime\\4.3.0\\system.runtime.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\5.0.0\\system.runtime.compilerservices.unsafe.5.0.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.runtime.extensions\\4.3.0\\system.runtime.extensions.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.runtime.handles\\4.3.0\\system.runtime.handles.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.runtime.interopservices\\4.3.0\\system.runtime.interopservices.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.runtime.interopservices.runtimeinformation\\4.3.0\\system.runtime.interopservices.runtimeinformation.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.runtime.numerics\\4.3.0\\system.runtime.numerics.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.security.claims\\4.3.0\\system.security.claims.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.security.cryptography.algorithms\\4.3.0\\system.security.cryptography.algorithms.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.security.cryptography.cng\\4.3.0\\system.security.cryptography.cng.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.security.cryptography.csp\\4.3.0\\system.security.cryptography.csp.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.security.cryptography.encoding\\4.3.0\\system.security.cryptography.encoding.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.security.cryptography.openssl\\4.3.0\\system.security.cryptography.openssl.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.security.cryptography.primitives\\4.3.0\\system.security.cryptography.primitives.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.security.cryptography.x509certificates\\4.3.0\\system.security.cryptography.x509certificates.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.security.principal\\4.3.0\\system.security.principal.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.security.principal.windows\\4.3.0\\system.security.principal.windows.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.text.encoding\\4.3.0\\system.text.encoding.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.text.encoding.extensions\\4.3.0\\system.text.encoding.extensions.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.threading\\4.3.0\\system.threading.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.threading.channels\\5.0.0\\system.threading.channels.5.0.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.threading.tasks\\4.3.0\\system.threading.tasks.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.threading.threadpool\\4.3.0\\system.threading.threadpool.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.threading.timer\\4.3.0\\system.threading.timer.4.3.0.nupkg.sha512",
+    "C:\\Users\\Shirayuki\\.nuget\\packages\\system.valuetuple\\4.5.0\\system.valuetuple.4.5.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1202",
-      "level": "Error",
-      "message": "Package AVX2PerlinNoise 1.0.0 is not compatible with net48 (.NETFramework,Version=v4.8). Package AVX2PerlinNoise 1.0.0 supports: netcoreapp3.1 (.NETCoreApp,Version=v3.1)",
-      "libraryId": "AVX2PerlinNoise",
-      "targetGraphs": [
-        ".NETFramework,Version=v4.8"
-      ]
-    },
-    {
-      "code": "NU1202",
-      "level": "Error",
-      "message": "Package OpenTK.Compute 4.7.4 is not compatible with net48 (.NETFramework,Version=v4.8). Package OpenTK.Compute 4.7.4 supports: netcoreapp3.1 (.NETCoreApp,Version=v3.1)",
-      "libraryId": "OpenTK.Compute",
-      "targetGraphs": [
-        ".NETFramework,Version=v4.8"
-      ]
-    },
-    {
-      "code": "NU1202",
-      "level": "Error",
-      "message": "Package OpenTK.Core 4.7.4 is not compatible with net48 (.NETFramework,Version=v4.8). Package OpenTK.Core 4.7.4 supports: netstandard2.1 (.NETStandard,Version=v2.1)",
-      "libraryId": "OpenTK.Core",
-      "targetGraphs": [
-        ".NETFramework,Version=v4.8"
-      ]
-    },
-    {
-      "code": "NU1202",
-      "level": "Error",
-      "message": "Package OpenTK.Graphics 4.7.4 is not compatible with net48 (.NETFramework,Version=v4.8). Package OpenTK.Graphics 4.7.4 supports:\r\n  - netcoreapp3.1 (.NETCoreApp,Version=v3.1)\r\n  - netstandard2.1 (.NETStandard,Version=v2.1)",
-      "libraryId": "OpenTK.Graphics",
-      "targetGraphs": [
-        ".NETFramework,Version=v4.8"
-      ]
-    },
-    {
-      "code": "NU1202",
-      "level": "Error",
-      "message": "Package OpenTK.Mathematics 4.7.4 is not compatible with net48 (.NETFramework,Version=v4.8). Package OpenTK.Mathematics 4.7.4 supports:\r\n  - netcoreapp3.1 (.NETCoreApp,Version=v3.1)\r\n  - netstandard2.1 (.NETStandard,Version=v2.1)",
-      "libraryId": "OpenTK.Mathematics",
-      "targetGraphs": [
-        ".NETFramework,Version=v4.8"
-      ]
-    },
-    {
-      "code": "NU1202",
-      "level": "Error",
-      "message": "Package OpenTK.Windowing.Common 4.7.4 is not compatible with net48 (.NETFramework,Version=v4.8). Package OpenTK.Windowing.Common 4.7.4 supports:\r\n  - netcoreapp3.1 (.NETCoreApp,Version=v3.1)\r\n  - netstandard2.1 (.NETStandard,Version=v2.1)",
-      "libraryId": "OpenTK.Windowing.Common",
-      "targetGraphs": [
-        ".NETFramework,Version=v4.8"
-      ]
-    },
-    {
-      "code": "NU1202",
-      "level": "Error",
-      "message": "Package OpenTK.Windowing.Desktop 4.7.4 is not compatible with net48 (.NETFramework,Version=v4.8). Package OpenTK.Windowing.Desktop 4.7.4 supports: netcoreapp3.1 (.NETCoreApp,Version=v3.1)",
-      "libraryId": "OpenTK.Windowing.Desktop",
-      "targetGraphs": [
-        ".NETFramework,Version=v4.8"
-      ]
-    },
-    {
-      "code": "NU1202",
-      "level": "Error",
-      "message": "Package OpenTK.Windowing.GraphicsLibraryFramework 4.7.4 is not compatible with net48 (.NETFramework,Version=v4.8). Package OpenTK.Windowing.GraphicsLibraryFramework 4.7.4 supports: netcoreapp3.1 (.NETCoreApp,Version=v3.1)",
-      "libraryId": "OpenTK.Windowing.GraphicsLibraryFramework",
-      "targetGraphs": [
-        ".NETFramework,Version=v4.8"
-      ]
-    },
-    {
-      "code": "NU1202",
-      "level": "Error",
-      "message": "Package OpenTK.OpenAL 4.7.4 is not compatible with net48 (.NETFramework,Version=v4.8). Package OpenTK.OpenAL 4.7.4 supports: netcoreapp3.1 (.NETCoreApp,Version=v3.1)",
-      "libraryId": "OpenTK.OpenAL",
-      "targetGraphs": [
-        ".NETFramework,Version=v4.8"
-      ]
-    },
-    {
-      "code": "NU1202",
-      "level": "Error",
-      "message": "Package AVX2PerlinNoise 1.0.0 is not compatible with net48 (.NETFramework,Version=v4.8) / win7-x86. Package AVX2PerlinNoise 1.0.0 supports: netcoreapp3.1 (.NETCoreApp,Version=v3.1)",
-      "libraryId": "AVX2PerlinNoise",
-      "targetGraphs": [
-        ".NETFramework,Version=v4.8/win7-x86"
-      ]
-    },
-    {
-      "code": "NU1202",
-      "level": "Error",
-      "message": "Package OpenTK.Compute 4.7.4 is not compatible with net48 (.NETFramework,Version=v4.8) / win7-x86. Package OpenTK.Compute 4.7.4 supports: netcoreapp3.1 (.NETCoreApp,Version=v3.1)",
-      "libraryId": "OpenTK.Compute",
-      "targetGraphs": [
-        ".NETFramework,Version=v4.8/win7-x86"
-      ]
-    },
-    {
-      "code": "NU1202",
-      "level": "Error",
-      "message": "Package OpenTK.Core 4.7.4 is not compatible with net48 (.NETFramework,Version=v4.8) / win7-x86. Package OpenTK.Core 4.7.4 supports: netstandard2.1 (.NETStandard,Version=v2.1)",
-      "libraryId": "OpenTK.Core",
-      "targetGraphs": [
-        ".NETFramework,Version=v4.8/win7-x86"
-      ]
-    },
-    {
-      "code": "NU1202",
-      "level": "Error",
-      "message": "Package OpenTK.Graphics 4.7.4 is not compatible with net48 (.NETFramework,Version=v4.8) / win7-x86. Package OpenTK.Graphics 4.7.4 supports:\r\n  - netcoreapp3.1 (.NETCoreApp,Version=v3.1)\r\n  - netstandard2.1 (.NETStandard,Version=v2.1)",
-      "libraryId": "OpenTK.Graphics",
-      "targetGraphs": [
-        ".NETFramework,Version=v4.8/win7-x86"
-      ]
-    },
-    {
-      "code": "NU1202",
-      "level": "Error",
-      "message": "Package OpenTK.Mathematics 4.7.4 is not compatible with net48 (.NETFramework,Version=v4.8) / win7-x86. Package OpenTK.Mathematics 4.7.4 supports:\r\n  - netcoreapp3.1 (.NETCoreApp,Version=v3.1)\r\n  - netstandard2.1 (.NETStandard,Version=v2.1)",
-      "libraryId": "OpenTK.Mathematics",
-      "targetGraphs": [
-        ".NETFramework,Version=v4.8/win7-x86"
-      ]
-    },
-    {
-      "code": "NU1202",
-      "level": "Error",
-      "message": "Package OpenTK.Windowing.Common 4.7.4 is not compatible with net48 (.NETFramework,Version=v4.8) / win7-x86. Package OpenTK.Windowing.Common 4.7.4 supports:\r\n  - netcoreapp3.1 (.NETCoreApp,Version=v3.1)\r\n  - netstandard2.1 (.NETStandard,Version=v2.1)",
-      "libraryId": "OpenTK.Windowing.Common",
-      "targetGraphs": [
-        ".NETFramework,Version=v4.8/win7-x86"
-      ]
-    },
-    {
-      "code": "NU1202",
-      "level": "Error",
-      "message": "Package OpenTK.Windowing.Desktop 4.7.4 is not compatible with net48 (.NETFramework,Version=v4.8) / win7-x86. Package OpenTK.Windowing.Desktop 4.7.4 supports: netcoreapp3.1 (.NETCoreApp,Version=v3.1)",
-      "libraryId": "OpenTK.Windowing.Desktop",
-      "targetGraphs": [
-        ".NETFramework,Version=v4.8/win7-x86"
-      ]
-    },
-    {
-      "code": "NU1202",
-      "level": "Error",
-      "message": "Package OpenTK.Windowing.GraphicsLibraryFramework 4.7.4 is not compatible with net48 (.NETFramework,Version=v4.8) / win7-x86. Package OpenTK.Windowing.GraphicsLibraryFramework 4.7.4 supports: netcoreapp3.1 (.NETCoreApp,Version=v3.1)",
-      "libraryId": "OpenTK.Windowing.GraphicsLibraryFramework",
-      "targetGraphs": [
-        ".NETFramework,Version=v4.8/win7-x86"
-      ]
-    },
-    {
-      "code": "NU1202",
-      "level": "Error",
-      "message": "Package OpenTK.OpenAL 4.7.4 is not compatible with net48 (.NETFramework,Version=v4.8) / win7-x86. Package OpenTK.OpenAL 4.7.4 supports: netcoreapp3.1 (.NETCoreApp,Version=v3.1)",
-      "libraryId": "OpenTK.OpenAL",
-      "targetGraphs": [
-        ".NETFramework,Version=v4.8/win7-x86"
-      ]
-    }
-  ]
+  "logs": []
 }
